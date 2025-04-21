@@ -1,8 +1,7 @@
 <?php
-
 include "db.php";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $fullname = trim($_POST["fullname"]);
     $email = trim($_POST["email"]);
     $username = trim($_POST["username"]);
@@ -13,22 +12,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "All fields are required.";
         exit();
     }
-
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "Invalid email format.";
         exit();
     }
-
     if (strlen($password) < 6) {
         echo "Password must be at least 6 characters.";
         exit();
     }
-
     if ($password !== $confirm_password) {
         echo "Passwords do not match.";
         exit();
     }
-
     $checkQuery = "SELECT * FROM users WHERE email='$email' OR username='$username'";
     $checkResult = mysqli_query($conn, $checkQuery);
 
@@ -36,14 +31,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Email or username already in use.";
         exit();
     }
-
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $role_id = 1;
+
     $insertQuery = "INSERT INTO users (fullname, email, username, password, role_id) 
                     VALUES ('$fullname', '$email', '$username', '$hashedPassword', $role_id)";
 
     if (mysqli_query($conn, $insertQuery)) {
-        echo "Registration successful. You can now <a href='login.html'>login</a>.";
+        echo "Registration successful!";
     } else {
         echo "Something went wrong: " . mysqli_error($conn);
     }

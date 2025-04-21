@@ -1,78 +1,41 @@
 <?php
 session_start();
-include 'apollodb.php';
-
-
-$message = "";
+include "db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $identifier = trim($_POST["identifier"]); 
+    $password = $_POST["password"];
 
-    if (empty($email) || empty($password)) {
-        $message = "Both fields are required!";
-    } else {
-        $stmt = $conn->prepare("SELECT id, fullname, password FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    if (empty($identifier) || empty($password)) {
+        echo "Please fill in all fields.";
+        exit();
+    }
 
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            if (password_verify($password, $row['password'])) {
-                $_SESSION['user_id'] = $row['id'];
-                $_SESSION['fullname'] = $row['fullname'];
-                header("Location: index.html");
+    $query = "SELECT users.*, roles.name AS role_name 
+              FROM users 
+              JOIN roles ON users.role_id = roles.id
+              WHERE email='$identifier' OR username='$identifier'";
+    $result = mysqli_query($conn, $query);
+
+    if (mysqli_num_rows($result) == 1) {
+        $user = mysqli_fetch_assoc($result);
+
+    if (password_verify($password, $user["password"])) {
+            $_SESSION["user_id"] = $user["id"];
+            $_SESSION["username"] = $user["username"];
+            $_SESSION["role"] = $user["role_name"];
+            if ($user["role_name"] == "admin") {
+                header("Location: admin_dashboard.php");
                 exit();
             } else {
-                $message = "Invalid password!";
+                header("Location: profile.php");
+                exit();
             }
         } else {
-            $message = "No user found with that email.";
+            echo "Incorrect password.";
         }
+    } else {
+        echo "User not found.";
     }
 }
-
-    $sql = "SELECT * FROM users WHERE email = '$email'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        $token = bin2hex(random_bytes(50));
-        $sql = "UPDATE users SET reset_token='$token' WHERE email='$email'";
-        $conn->query($sql);
-
-        // Send email with reset link
-        $reset_link = "http://yourwebsite.com/reset_password.php?token=$token";
-        mail($email, "Reset Password", "Click this link to reset the password: $reset_link");
-        echo "Link is sent in your email address.";
-    } else {
-        echo "User does not exist!";
-    }
-
-    $conn->close();
 ?>
-
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
-    <p style="color:red;"><?php echo $message; ?></p>
-    <form method="POST">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-
-    <form action="forgot_password.php" method="POST">
-        <input type="email" name="email" placeholder="Email" required>
-        <button type="submit">Dërgo Linkun e Rikuperimit</button>
-    </form>
-</body>
-</html>
-
