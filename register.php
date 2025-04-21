@@ -1,27 +1,51 @@
 <?php
-include 'db.php';
 
-$username = $_POST['username'];
-$email = $_POST['email'];
-$password = password_hash($_POST['password'], PASSWORD_DEFAULT); // e enkriptuar
-$default_role = 1; // 1 = passenger
+include "db.php";
 
-// Kontrollo nëse ekziston email ose username
-$check = $conn->prepare("SELECT * FROM users WHERE fullname=? OR email=?");
-$check->bind_param("ss", $fullname, $email);
-$check->execute();
-$result = $check->get_result();
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $fullname = trim($_POST["fullname"]);
+    $email = trim($_POST["email"]);
+    $username = trim($_POST["username"]);
+    $password = $_POST["password"];
+    $confirm_password = $_POST["confirm_password"];
 
-if ($result->num_rows > 0) {
-    echo "User already exists!";
-} else {
-    $stmt = $conn->prepare("INSERT INTO users (fullname, email, password, role_id) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("sssi", $fullname, $email, $password, $default_role);
-    
-    if ($stmt->execute()) {
-        echo "Registration successful! <a href='login.html'>Login now</a>";
+    if (empty($fullname) || empty($email) || empty($username) || empty($password) || empty($confirm_password)) {
+        echo "All fields are required.";
+        exit();
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "Invalid email format.";
+        exit();
+    }
+
+    if (strlen($password) < 6) {
+        echo "Password must be at least 6 characters.";
+        exit();
+    }
+
+    if ($password !== $confirm_password) {
+        echo "Passwords do not match.";
+        exit();
+    }
+
+    $checkQuery = "SELECT * FROM users WHERE email='$email' OR username='$username'";
+    $checkResult = mysqli_query($conn, $checkQuery);
+
+    if (mysqli_num_rows($checkResult) > 0) {
+        echo "Email or username already in use.";
+        exit();
+    }
+
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $role_id = 1;
+    $insertQuery = "INSERT INTO users (fullname, email, username, password, role_id) 
+                    VALUES ('$fullname', '$email', '$username', '$hashedPassword', $role_id)";
+
+    if (mysqli_query($conn, $insertQuery)) {
+        echo "Registration successful. You can now <a href='login.html'>login</a>.";
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Something went wrong: " . mysqli_error($conn);
     }
 }
 ?>

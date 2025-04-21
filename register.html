@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Register</title>
+  <title>Register - Apollo Airlines</title>
 </head>
 <body>
-    <h2>Register</h2>
-    <form action="register.php" method="POST">
-        <input type="text" name="fullname" placeholder="Full Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="login.html">Login here</a></p>
+  <h2>Register to Apollo-Skies</h2>
+  <form action="register.php" method="POST">
+    <label>Full Name:</label><br>
+    <input type="text" name="fullname" required><br><br>
+    <label>Email:</label><br>
+    <input type="email" name="email" required><br><br>
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br><br>
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+    <label>Confirm Password:</label><br>
+    <input type="password" name="confirm_password" required><br><br>
+    <input type="submit" value="Register">
+  </form>
+
+  <p>Already have an account? <a href="login.html">Login here</a></p>
 </body>
 </html>
