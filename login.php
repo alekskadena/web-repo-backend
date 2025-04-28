@@ -62,10 +62,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     mysqli_stmt_close($stmt);
 }
-<<<<<<< HEAD
-?>
-=======
-mysqli_close($conn);
-?>
 
->>>>>>> 391a96d88fab2eb79f4048bc728eed3b1762982b
