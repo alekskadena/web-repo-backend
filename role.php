@@ -1,8 +1,8 @@
 <?php
 session_start();
 if ($_SESSION['role'] == 'admin') {
-    header('Location: admin_dashboard.php');
+    header('Location: admin.php');
 } else {
-    header('Location: user_profile.php');
+    header('Location: profile.php');
 }
 ?>
