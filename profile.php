@@ -2,9 +2,10 @@
 session_start();
 include "config.php";
 
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
+
 
 if (!isset($_SESSION["user_id"])) {
     echo json_encode(["error" => "Not logged in"]);
