@@ -2,10 +2,9 @@
 session_start();
 include "config.php";
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: http://localhost:5173"); 
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
-
 
 if (!isset($_SESSION["user_id"])) {
     echo json_encode(["error" => "Not logged in"]);
@@ -19,5 +18,9 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-echo json_encode($user);
+if ($user) {
+    echo json_encode($user);
+} else {
+    echo json_encode(["error" => "User not found"]);
+}
 ?>
