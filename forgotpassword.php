@@ -12,9 +12,11 @@ header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
 
+// Aktivizo ndihmën për gabimet
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// Kërkoni për ndihmë me bibliotekën PHPMailer dhe lidhjen me bazën e të dhënave
 require 'vendor/autoload.php';
 require 'db.php';
 
@@ -37,7 +39,7 @@ function sendMail($email, $token) {
         $mail->isHTML(true);
         $mail->Subject = 'Password Reset Link from Apollo-Skies';
 
-        $resetLink = "http://localhost:80/web-repo-backend/updatepassword.php" . $token;
+        $resetLink = "http://localhost:5173/updatepassword?token=" . $token;
         $mail->Body = "We got a request to reset your password!<br><br>
                        Click the link below:<br>
                        <a href='$resetLink'>Reset Password</a><br><br>
@@ -49,19 +51,24 @@ function sendMail($email, $token) {
         return false;
     }
 }
+
 $rawData = file_get_contents("php://input");
 $data = json_decode($rawData, true);
+
 if (isset($data['email'])) {
-    $email = $conn->real_escape_string($data['email']);
+    $email = trim($conn->real_escape_string($data['email']));
+
+    // Kontrolloni nëse ekziston ky email në databazë
     $check = $conn->query("SELECT * FROM users WHERE email='$email'");
     if ($check && $check->num_rows == 1) {
         $token = bin2hex(random_bytes(16));
-        $conn->query("DELETE FROM users WHERE email='$email'");  
 
+        // Përditësoni token-in në databazë
         $stmt = $conn->prepare("UPDATE users SET reset_token=?, reset_token_expire=DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE email=?");
         $stmt->bind_param("ss", $token, $email);
         $stmt->execute();
 
+        // Dërgo email për përditësimin e fjalëkalimit
         if (sendMail($email, $token)) {
             echo json_encode(["message" => "Reset link sent to your inbox! Please check your inbox."]);
         } else {

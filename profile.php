@@ -12,7 +12,7 @@ if (!isset($_SESSION["user_id"])) {
 }
 
 $user_id = $_SESSION["user_id"];
-$stmt = $conn->prepare("SELECT fullname, email, username, created_at FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT fullname, email, username FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
