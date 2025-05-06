@@ -6,6 +6,11 @@ $dbname = 'dbapollo';
 
 $conn = mysqli_connect($host, $username, $password, $dbname);
 if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Connection failed: ' . mysqli_connect_error()
+    ]);
+    exit;
 }
-
+?>

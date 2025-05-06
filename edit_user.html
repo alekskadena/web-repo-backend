@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <script>
+        // Funksioni për të dërguar formularin për përditësimin e përdoruesit
+        function updateUser() {
+            var username = document.getElementById('username').value;
+            var email = document.getElementById('email').value;
+            var role = document.getElementById('role').value;
+            var id = document.getElementById('user_id').value;
+
+            var formData = new FormData();
+            formData.append('id', id);
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('role', role);
+
+            // Kërkesa për të përditësuar përdoruesin
+            fetch('update_passenger.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Shfaqni një alert për sukses
+                    alertBox('Success', data.message, 'success');
+                } else {
+                    // Shfaqni një alert për gabim
+                    alertBox('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating user:', error);
+                alertBox('Error', 'An error occurred. Please try again.', 'error');
+            });
+        }
+
+        // Funksioni për të shfaqur alert box
+        function alertBox(title, message, type) {
+            var alertBox = document.createElement('div');
+            alertBox.classList.add('alert', type);
+            alertBox.innerHTML = `<strong>${title}!</strong> ${message}`;
+            document.body.appendChild(alertBox);
+
+            // Prit 3 sekonda dhe pastro alertin
+            setTimeout(() => {
+                alertBox.remove();
+            }, 3000);
+        }
+    </script>
+    <style>
+        /* Stili për alert box */
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .error {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Edit User</h2>
+
+<form id="editForm">
+    <input type="hidden" id="user_id" value="<?= $_GET['id']; ?>">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" value="<?= $user['username']; ?>" required><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="<?= $user['email']; ?>" required><br><br>
+
+    <label for="role">Role:</label>
+    <select id="role" name="role" required>
+        <option value="1" <?= ($user['role_id'] == 1) ? 'selected' : ''; ?>>User</option>
+        <option value="2" <?= ($user['role_id'] == 2) ? 'selected' : ''; ?>>Admin</option>
+    </select><br><br>
+
+    <button type="button" onclick="updateUser()">Update User</button>
+</form>
+
+</body>
+</html>
