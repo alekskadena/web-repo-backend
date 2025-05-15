@@ -1,22 +1,26 @@
 
 <?php
-// Kontrollo nëse formulari është dërguar dhe shto përdoruesin në DB
+session_start();
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    include "db.php"; // Lidhja me DB
+    include "db.php"; 
 
     $username = $_POST['username'];
     $email = $_POST['email'];
     $role_id = $_POST['role'];
 
-    // Shto përdoruesin në DB
+    //shtimi i perdoruesit n dbapolllo
     $insert_sql = "INSERT INTO users (username, email, role_id) VALUES (?, ?, ?)";
     $stmt = mysqli_prepare($conn, $insert_sql);
     mysqli_stmt_bind_param($stmt, "ssi", $username, $email, $role_id);
 
     if (mysqli_stmt_execute($stmt)) {
-        $user_id = mysqli_insert_id($conn);  // Merr ID-në e përdoruesit të sapo krijuar
+        $user_id = mysqli_insert_id($conn);  // ky kusht mundeson qe te marri at id e krijuar dhe shikon nese jan plotsu t dhenat
 
-        // Përgjigje pozitive me të dhënat e përdoruesit të shtuar
         echo json_encode([
             'success' => true,
             'user' => [
@@ -27,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ]
         ]);
     } else {
-        // Përgjigje në rast të gabimit
         echo json_encode(['success' => false]);
     }
 

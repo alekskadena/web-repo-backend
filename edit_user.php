@@ -1,17 +1,20 @@
 <?php
+session_start();
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
 require 'db.php';
 
-// Kontrollo nëse është dhënë një ID për përdoruesin
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Merr të dhënat e përdoruesit nga databaza
     $result = mysqli_query($conn, "SELECT * FROM users WHERE id = $id");
 
     if ($result && mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
 
-        // Shfaq formën me të dhënat e përdoruesit për redaktim
+        //shikojme nese roli eshte admin or not
         echo '
         <form action="update_passenger.php" method="POST">
             <input type="hidden" name="id" value="' . $user['id'] . '">
