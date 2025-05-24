@@ -1,4 +1,7 @@
+
+
 <?php
+session_start();
 $flight_id = $_GET['flight_id'];
 $connection = new mysqli("localhost", "root", "", "dbapollo");
 
