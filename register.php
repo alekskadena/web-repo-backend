@@ -36,6 +36,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo json_encode(["status" => "error", "message" => "All fields are required."]);
         exit();
     }
+    if (strlen($password) < 6) {
+    echo json_encode(["status" => "error", "message" => "Password must be at least 6 characters long."]);
+    exit();
+}
 
     if ($password !== $confirm_password) {
         echo json_encode(["status" => "error", "message" => "Passwords do not match."]);
