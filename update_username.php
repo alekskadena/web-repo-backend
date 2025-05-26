@@ -6,7 +6,6 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    // Përgjigju OPTIONS për preflight
     http_response_code(200);
     exit;
 }
@@ -16,7 +15,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-include 'db.php';  // ky file përmban lidhjen $conn me mysqli
+include 'db.php';  
 
 $data = json_decode(file_get_contents("php://input"), true);
 if (!$data || !isset($data['username'])) {
@@ -41,7 +40,6 @@ if (!$stmt) {
 $stmt->bind_param("si", $username, $user_id);
 
 if (!$stmt->execute()) {
-    // Kap gabimin nëse username ekziston tashmë (duplicate entry)
     if ($conn->errno == 1062) {
         echo json_encode(["status" => "error", "message" => "Username already taken"]);
     } else {
@@ -50,7 +48,5 @@ if (!$stmt->execute()) {
     $stmt->close();
     exit;
 }
-
 $stmt->close();
-
 echo json_encode(["status" => "success"]);

@@ -13,13 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $role = $_POST['role'];
 
-    // Verifikoni nëse të dhënat janë të vlefshme
+
     if (empty($username) || empty($email) || empty($role)) {
         echo json_encode(['success' => false, 'message' => 'All fields are required']);
         exit;
     }
 
-    // Përditësoni përdoruesin në databazë
+
     $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, email = ?, role_id = ? WHERE id = ?");
     mysqli_stmt_bind_param($stmt, 'ssii', $username, $email, $role, $id);
 

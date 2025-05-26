@@ -30,7 +30,7 @@ $email = $conn->real_escape_string($input['email']);
 $amount = floatval($input['amount']);
 $order_id = $conn->real_escape_string($input['paypal_order_id']);
 
-$sql = "INSERT INTO payments (name, email, amount, paypal_order_id) VALUES ('$name', '$email', $amount, '$order_id')";
+$sql = "INSERT INTO payment (name, email, amount, paypal_order_id) VALUES ('$name', '$email', $amount, '$order_id')";
 
 if ($conn->query($sql)) {
     echo json_encode(['success' => true, 'message' => 'Pagesa u ruajt me sukses']);

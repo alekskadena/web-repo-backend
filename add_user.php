@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $role_id = $_POST['role'];
 
-    //shtimi i perdoruesit n dbapolllo
     $insert_sql = "INSERT INTO users (username, email, role_id) VALUES (?, ?, ?)";
     $stmt = mysqli_prepare($conn, $insert_sql);
     mysqli_stmt_bind_param($stmt, "ssi", $username, $email, $role_id);
